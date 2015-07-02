@@ -1,0 +1,3 @@
+# NetBeans comes with pre-built binaries for pretty much all platforms,
+# we are not building them. So we have to ignore this warning:
+setBadness('arch-independent-package-contains-binary-or-object', 0)

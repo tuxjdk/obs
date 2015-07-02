@@ -1,0 +1,20 @@
+# ignoring osc dirs:
+**/.osc
+
+# normal distributions do not need those, only RHEL-based do:
+/fdupes/
+/quilt/
+
+# we are tracking the sources, but do not want to commit them:
+/netbeans/netbeans/
+
+# do not save the sources tarballs:
+/tuxjdk/jdk8u*.tar.xz
+/tuxjdk/tuxjdk-*.tar.xz
+/netbeans/netbeans.tar.xz
+/ant/apache-ant-*-src.tar.bz2
+
+# do not track build deps, will download later when needed:
+/netbeans/binaries-cache.tar.xz
+/ant/ant-optional-libs.tar.xz
+
