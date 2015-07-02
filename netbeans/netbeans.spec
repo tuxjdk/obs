@@ -25,10 +25,12 @@ Summary:        Integrated development environment
 License:        CDDL-1.0
 Group:          Development/Languages
 BuildArch:      noarch
+AutoReqProv:    no
 BuildRequires:  bash
 BuildRequires:  tuxjdk
 BuildRequires:  ant-launchers
 BuildRequires:  fdupes
+Requires:       tuxjdk
 Source0:        %{name}.tar.xz
 Source1:        binaries-cache.tar.xz
 Source2:        %{name}-launcher.sh
@@ -53,6 +55,36 @@ BuildArch:      noarch
 Launch script for NetBeans, located under /usr/local/bin, to be the first
 in path but not to conflict with existing jpackage-based packages.
 
+%package        cnd
+Summary:        C/C++ development for NetBeans
+Group:          Development/Languages
+Requires:       netbeans = %{version}
+BuildArch:      noarch
+AutoReqProv:    no
+
+%description    cnd
+C/C++ development environment for NetBeans.
+
+%package        java
+Summary:        Java development for NetBeans
+Group:          Development/Languages
+Requires:       netbeans = %{version}
+BuildArch:      noarch
+AutoReqProv:    no
+
+%description    java
+Java development environment for NetBeans.
+
+%package        enterprise
+Summary:        Enterprise Java development for NetBeans
+Group:          Development/Languages
+Requires:       netbeans-java = %{version}
+BuildArch:      noarch
+AutoReqProv:    no
+
+%description    enterprise
+Enterprise Java development environment for NetBeans.
+
 %prep
 %setup -q -n %{name}
 pushd nbbuild
@@ -66,8 +98,8 @@ popd
 
 %build
 pushd nbbuild
-ant -silent -Dcluster.config=enterprise build-nozip
-ant -silent -Dcluster.config=cnd build-nozip
+ant -silent build-nozip
+ant -silent build-nozip
 popd
 
 %install
@@ -85,7 +117,10 @@ popd
 popd
 # cleaning up files we do not need:
 find nbbuild/netbeans -name .lastModified -delete
-rm -f nbbuild/netbeans/nb.cluster.*.built
+find nbbuild/netbeans -name *.exe -delete
+rm -f nbbuild/netbeans/nb.cluster.*.built nbbuild/netbeans/*.html nbbuild/netbeans/*.txt nbbuild/netbeans/*.properties nbbuild/netbeans/*.css
+# we do not want javafx for now, untill someone will specifically ask for it:
+rm -rf nbbuild/netbeans/javafx
 # setting executable flags:
 find nbbuild/netbeans -name *.sh -exec chmod a+x {} +
 find nbbuild/netbeans -name *.py -exec chmod a+x {} +
@@ -105,12 +140,36 @@ install -Dm 755 %{SOURCE2} %{buildroot}/usr/local/bin/netbeans
 
 %files
 %defattr(644,root,root,755)
-/opt/%{name}
-%config /opt/%{name}/etc/%{name}.conf
+%attr(755,root,root) /opt/%{name}/bin/*
+%config /opt/%{name}/etc/*
+/opt/%{name}/extide
+/opt/%{name}/harness
+/opt/%{name}/ide
+/opt/%{name}/nb
+/opt/%{name}/platform
 
 %files launchers
 %defattr(755,root,root,755)
 /usr/local/bin/*
+
+%files cnd
+%defattr(755,root,root,755)
+%dir /opt/%{name}
+/opt/%{name}/cnd
+/opt/%{name}/dlight
+
+%files java
+%defattr(755,root,root,755)
+%dir /opt/%{name}
+/opt/%{name}/java
+/opt/%{name}/profiler
+
+%files enterprise
+%defattr(755,root,root,755)
+%dir /opt/%{name}
+/opt/%{name}/enterprise
+/opt/%{name}/webcommon
+/opt/%{name}/websvccommon
 
 %changelog
 * Wed Jul  1 2015 baiduzhyi.devel@gmail.com
