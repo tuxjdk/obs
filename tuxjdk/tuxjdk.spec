@@ -20,6 +20,9 @@
 # we are building release so there is no useful debuginfo,
 # so disabling debuginfo package creation:
 %global debug_package %{nil}
+# no one should touch our jars, we know better:
+%define __jar_repack %{nil}
+
 
 Name:           tuxjdk
 Version:        8.%{update}.%{minor}
