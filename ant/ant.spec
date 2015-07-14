@@ -12,6 +12,7 @@
 # license that conforms to the Open Source Definition (Version 1.9)
 # published by the Open Source Initiative.
 
+%global vendor  tuxjdk
 
 # openjdk build system is different,
 # we are building release so there is no useful debuginfo,
@@ -20,7 +21,7 @@
 %define __jar_repack %{nil}
 
 Name:           ant
-Version:        1.9.5
+Version:        1.9.6
 Release:        0
 URL:            http://ant.apache.org/
 Summary:        Java library and command-line tool that help building software
@@ -52,7 +53,7 @@ in path but not to conflict with existing jpackage-based packages.
 ( cd lib/optional && tar -xJf %{SOURCE1} )
 
 %build
-export JAVA_HOME=/opt/tuxjdk
+export JAVA_HOME=/opt/%{vendor}/tuxjdk
 bash ./build.sh -Ddist.dir=dist dist
 
 %install
@@ -63,21 +64,25 @@ bash ./build.sh -Ddist.dir=dist dist
 # and probably for a good reason:
 export NO_BRP_STRIP_DEBUG='true'
 # creating main dir:
-install -dm 755 %{buildroot}/opt/%{name}
-cp -R dist/* %{buildroot}/opt/%{name}/
+install -dm 755 %{buildroot}/opt/%{vendor}/%{name}
+cp -R dist/* %{buildroot}/opt/%{vendor}/%{name}/
 install -Dm 755 %{SOURCE2} %{buildroot}/usr/local/bin/ant
 # hardlinks instead of duplicates:
-%fdupes %{buildroot}/opt/%{name}/
+%fdupes %{buildroot}/opt/%{vendor}/%{name}/
 
 %files
 %defattr(644,root,root,755)
-/opt/%{name}
-%attr(755,root,root) /opt/%{name}/bin/*
+/opt/%{vendor}/%{name}
+%attr(755,root,root) /opt/%{vendor}/%{name}/bin/*
 
 %files launchers
 %defattr(755,root,root,755)
 /usr/local/bin/*
 
 %changelog
+* Tue Jul 14 2015 - baiduzhyi.devel@gmail.com
+- Updating to version 1.9.6.
+* Tue Jul 14 2015 - baiduzhyi.devel@gmail.com
+- Moving under vendor-specific dir.
 * Wed Jul  1 2015 baiduzhyi.devel@gmail.com
 - Initial attempt to build ant for tuxjdk.

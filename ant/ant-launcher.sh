@@ -1,4 +1,4 @@
 #!/bin/bash
-export ANT_HOME=/opt/ant
-export JAVA_HOME=/opt/tuxjdk
-/opt/ant/bin/ant "$@"
+export ANT_HOME=/opt/tuxjdk/ant
+export JAVA_HOME=/opt/tuxjdk/tuxjdk
+/opt/tuxjdk/ant/bin/ant "$@"
