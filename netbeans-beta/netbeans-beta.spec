@@ -12,14 +12,15 @@
 # license that conforms to the Open Source Definition (Version 1.9)
 # published by the Open Source Initiative.
 
+%global vendor  tuxjdk
 
 # who wants to debug the netbeans itself should build it with debug info:
 %global debug_package %{nil}
 # no one should touch our jars, we know better:
 %define __jar_repack %{nil}
 
-Name:           netbeans
-Version:        8.0.20150708
+Name:           netbeans-beta
+Version:        20150721
 Release:        0
 URL:            http://www.netbeans.org/
 Summary:        Integrated development environment
@@ -35,7 +36,10 @@ Requires:       tuxjdk
 Source0:        %{name}.tar.xz
 Source1:        binaries-cache.tar.xz
 Source2:        %{name}-launcher.sh
-Source3:        %{name}.conf
+Source3:        netbeans.conf
+Source4:        drop-unsupported-modules.sh
+Source5:        drop-javadocs.sh
+Source6:        post-build-cleanup.sh
 Source10:       netbeans-rpmlintrc
 Patch0:         no-javafx-deps.diff
 
@@ -99,13 +103,10 @@ in path but not to conflict with existing jpackage-based packages.
 
 %prep
 %setup -q -n %{name}
-%patch0 -p1
-rm -rf core.browser.webview.jfxplatformbridge  javafx2.editor  javafx2.kit  javafx2.platform  javafx2.project  javafx2.samples  javafx2.scenebuilder  libs.javafx core.browser.webview api.htmlui templatesui
+bash %{SOURCE4}
+bash %{SOURCE5}
 pushd nbbuild
-mkdir binaries-cache
-pushd binaries-cache
 tar -xJf %{SOURCE1}
-popd
 popd
 
 %build
@@ -114,38 +115,7 @@ ant -Dpermit.jdk8.builds=true -Dbinaries.cache="$(pwd)/binaries-cache" -silent b
 popd
 
 %install
-##
-## CLEANUP START ##
-##
-# cleaning up non-linux stuff:
-pushd nbbuild/netbeans/ide/bin/nativeexecution
-rm -rf Sun* Mac* Windows*
-popd
-pushd nbbuild/netbeans/profiler/lib/deployed
-pushd jdk15
-rm -rf hpux* mac solaris* windows*
-popd
-pushd jdk16
-rm -rf hpux* mac solaris* windows*
-popd
-pushd cvm
-rm -rf windows*
-popd
-popd
-# cleaning up files we do not need:
-find nbbuild/netbeans -name .lastModified -delete
-find nbbuild/netbeans -name *.exe -delete
-find nbbuild/netbeans -name *.dll -delete
-find nbbuild/netbeans -name *.bat -delete
-find nbbuild/netbeans -name *.cmd -delete
-rm -f nbbuild/netbeans/nb.cluster.*.built nbbuild/netbeans/*.html nbbuild/netbeans/*.txt nbbuild/netbeans/*.properties nbbuild/netbeans/*.css
-# we do not want javafx for now, untill someone will specifically ask for it:
-rm -rf nbbuild/netbeans/javafx nbbuild/netbeans/harness/nbi/.common
-# fixing end of lines from windows:
-sed -i 's/\r$//' nbbuild/netbeans/java/maven/bin/m2.conf
-##
-## CLEANUP END ##
-##
+bash %{SOURCE6}
 # install config:
 cp -f %{SOURCE3} nbbuild/netbeans/etc/
 # we are building release build,
@@ -153,63 +123,63 @@ cp -f %{SOURCE3} nbbuild/netbeans/etc/
 # and probably for a good reason:
 export NO_BRP_STRIP_DEBUG='true'
 # creating main dir:
-install -dm 755 %{buildroot}/opt/%{name}
-cp -R nbbuild/netbeans/* %{buildroot}/opt/%{name}/
+install -dm 755 %{buildroot}/opt/%{vendor}/%{name}
+cp -R nbbuild/netbeans/* %{buildroot}/opt/%{vendor}/%{name}/
 install -Dm 755 %{SOURCE2} %{buildroot}/usr/local/bin/netbeans
 # hardlinks instead of duplicates:
-%fdupes %{buildroot}/opt/%{name}/
+%fdupes %{buildroot}/opt/%{vendor}/%{name}/
 
 %files
 %defattr(644,root,root,755)
-/opt/%{name}/apisupport
-/opt/%{name}/extra
-/opt/%{name}/harness
-/opt/%{name}/ide
-/opt/%{name}/nb
-/opt/%{name}/platform
-/opt/%{name}/bin
-/opt/%{name}/etc
-%attr(755,root,root) /opt/%{name}/bin/*
-%attr(755,root,root) /opt/%{name}/harness/launchers/*
-%attr(755,root,root) /opt/%{name}/ide/bin/nativeexecution/*.sh
-%attr(755,root,root) /opt/%{name}/platform/lib/nbexec
-%config /opt/%{name}/etc/*
+/opt/%{vendor}/%{name}/apisupport
+/opt/%{vendor}/%{name}/extra
+/opt/%{vendor}/%{name}/harness
+/opt/%{vendor}/%{name}/ide
+/opt/%{vendor}/%{name}/nb
+/opt/%{vendor}/%{name}/platform
+/opt/%{vendor}/%{name}/bin
+/opt/%{vendor}/%{name}/etc
+%attr(755,root,root) /opt/%{vendor}/%{name}/bin/*
+%attr(755,root,root) /opt/%{vendor}/%{name}/harness/launchers/*
+%attr(755,root,root) /opt/%{vendor}/%{name}/ide/bin/nativeexecution/*.sh
+%attr(755,root,root) /opt/%{vendor}/%{name}/platform/lib/nbexec
+%config /opt/%{vendor}/%{name}/etc/*
 
 %files ergonomics
 %defattr(644,root,root,755)
-%dir /opt/%{name}
-/opt/%{name}/ergonomics
+%dir /opt/%{vendor}/%{name}
+/opt/%{vendor}/%{name}/ergonomics
 
 %files cnd
 %defattr(644,root,root,755)
-%dir /opt/%{name}
-/opt/%{name}/cnd
-/opt/%{name}/cndext
-/opt/%{name}/dlight
-%attr(755,root,root) /opt/%{name}/cnd/bin/*.sh
+%dir /opt/%{vendor}/%{name}
+/opt/%{vendor}/%{name}/cnd
+/opt/%{vendor}/%{name}/cndext
+/opt/%{vendor}/%{name}/dlight
+%attr(755,root,root) /opt/%{vendor}/%{name}/cnd/bin/*.sh
 
 %files java
 %defattr(644,root,root,755)
-%dir /opt/%{name}
-/opt/%{name}/extide
-/opt/%{name}/java
-/opt/%{name}/profiler
-%attr(755,root,root) /opt/%{name}/extide/ant/bin/*
-%attr(755,root,root) /opt/%{name}/java/maven/bin/*
-%attr(644,root,root) /opt/%{name}/java/maven/bin/m2.conf
-%attr(755,root,root) /opt/%{name}/profiler/remote-pack-defs/*.sh
+%dir /opt/%{vendor}/%{name}
+/opt/%{vendor}/%{name}/extide
+/opt/%{vendor}/%{name}/java
+/opt/%{vendor}/%{name}/profiler
+%attr(755,root,root) /opt/%{vendor}/%{name}/extide/ant/bin/*
+%attr(755,root,root) /opt/%{vendor}/%{name}/java/maven/bin/*
+%attr(644,root,root) /opt/%{vendor}/%{name}/java/maven/bin/m2.conf
+%attr(755,root,root) /opt/%{vendor}/%{name}/profiler/remote-pack-defs/*.sh
 
 %files enterprise
 %defattr(644,root,root,755)
-%dir /opt/%{name}
-/opt/%{name}/enterprise
-/opt/%{name}/webcommon
-/opt/%{name}/websvccommon
+%dir /opt/%{vendor}/%{name}
+/opt/%{vendor}/%{name}/enterprise
+/opt/%{vendor}/%{name}/webcommon
+/opt/%{vendor}/%{name}/websvccommon
 
 %files launchers
 %defattr(755,root,root,755)
 /usr/local/bin/*
 
 %changelog
-* Wed Jul  8 2015 baiduzhyi.devel@gmail.com
-- Initial attempt to build NetBeans.
+* Tue Jul 21 2015 baiduzhyi.devel@gmail.com
+- Initial package for netbeans-beta.

@@ -12,10 +12,11 @@
 # license that conforms to the Open Source Definition (Version 1.9)
 # published by the Open Source Initiative.
 
-%global hgtag   jdk8u45-b14
-%global update  45
-%global minor   03
 %global vendor  tuxjdk
+
+%global hgtag   jdk8u51-b16
+%global update  51
+%global minor   03
 
 # openjdk build system is different,
 # we are building release so there is no useful debuginfo,
@@ -130,6 +131,8 @@ cp default_swing.properties %{buildroot}/opt/%{vendor}/%{name}/jre/lib/swing.pro
 /usr/local/bin/*
 
 %changelog
+* Wed Jul 15 2015 baiduzhyi.devel@gmail.com
+- Refreshing for 8u51.
 * Tue Jul 14 2015 - baiduzhyi.devel@gmail.com
 - Moving under vendor-specific dir.
 * Wed Jun 10 2015 baiduzhyi.devel@gmail.com
