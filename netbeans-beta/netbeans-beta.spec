@@ -41,7 +41,6 @@ Source4:        drop-unsupported-modules.sh
 Source5:        drop-javadocs.sh
 Source6:        post-build-cleanup.sh
 Source10:       netbeans-rpmlintrc
-Patch0:         no-javafx-deps.diff
 
 %description
 NetBeans IDE is an open-source integrated development environment. 
