@@ -32,15 +32,22 @@ BuildRequires:  bash
 BuildRequires:  tuxjdk
 BuildRequires:  ant-launchers
 BuildRequires:  fdupes
+BuildRequires:  update-desktop-files
 Requires:       tuxjdk
 Source0:        %{name}.tar.xz
 Source1:        binaries-cache.tar.xz
 Source2:        %{name}-launcher.sh
 Source3:        netbeans.conf
-Source4:        drop-unsupported-modules.sh
-Source5:        drop-javadocs.sh
-Source6:        post-build-cleanup.sh
-Source10:       netbeans-rpmlintrc
+Source4:        %{name}.desktop
+Source11:       nb40.png
+Source12:       nb40.icns
+Source13:       nb40_16.gif
+Source14:       nb40_32.gif
+Source15:       nb40_48.gif
+Source91:       drop-unsupported-modules.sh
+Source92:       drop-javadocs.sh
+Source93:       post-build-cleanup.sh
+Source100:      netbeans-rpmlintrc
 
 %description
 NetBeans IDE is an open-source integrated development environment. 
@@ -102,8 +109,13 @@ in path but not to conflict with existing jpackage-based packages.
 
 %prep
 %setup -q -n %{name}
-bash %{SOURCE4}
-bash %{SOURCE5}
+bash %{SOURCE91}
+bash %{SOURCE92}
+cp -f %{SOURCE11} ide.branding/release/netbeans.png
+cp -f %{SOURCE12} ide.branding/release/netbeans.icns
+cp -f %{SOURCE13} ide.branding/core.startup/src/org/netbeans/core/startup/frame_nb.gif
+cp -f %{SOURCE14} ide.branding/core.startup/src/org/netbeans/core/startup/frame32_nb.gif
+cp -f %{SOURCE15} ide.branding/core.startup/src/org/netbeans/core/startup/frame48_nb.gif
 pushd nbbuild
 tar -xJf %{SOURCE1}
 popd
@@ -114,7 +126,7 @@ ant -Dpermit.jdk8.builds=true -Dbinaries.cache="$(pwd)/binaries-cache" -silent b
 popd
 
 %install
-bash %{SOURCE6}
+bash %{SOURCE93}
 # install config:
 cp -f %{SOURCE3} nbbuild/netbeans/etc/
 # we are building release build,
@@ -127,6 +139,8 @@ cp -R nbbuild/netbeans/* %{buildroot}/opt/%{vendor}/%{name}/
 install -Dm 755 %{SOURCE2} %{buildroot}/usr/local/bin/netbeans
 # hardlinks instead of duplicates:
 %fdupes %{buildroot}/opt/%{vendor}/%{name}/
+# desktop file:
+%suse_update_desktop_file -i %{name} Development IDE
 
 %files
 %defattr(644,root,root,755)
@@ -143,6 +157,7 @@ install -Dm 755 %{SOURCE2} %{buildroot}/usr/local/bin/netbeans
 %attr(755,root,root) /opt/%{vendor}/%{name}/ide/bin/nativeexecution/*.sh
 %attr(755,root,root) /opt/%{vendor}/%{name}/platform/lib/nbexec
 %config /opt/%{vendor}/%{name}/etc/*
+%{_datadir}/applications/%{name}.desktop
 
 %files ergonomics
 %defattr(644,root,root,755)
