@@ -20,7 +20,7 @@
 %define __jar_repack %{nil}
 
 Name:           netbeans-beta
-Version:        20150721
+Version:        20150723
 Release:        0
 URL:            http://www.netbeans.org/
 Summary:        Integrated development environment
@@ -46,7 +46,8 @@ Source14:       nb40_32.gif
 Source15:       nb40_48.gif
 Source91:       drop-unsupported-modules.sh
 Source92:       drop-javadocs.sh
-Source93:       post-build-cleanup.sh
+Source93:       tuxjdk-change-default-font-size.sh
+Source99:       post-build-cleanup.sh
 Source100:      netbeans-rpmlintrc
 
 %description
@@ -60,7 +61,7 @@ Git, Mercurial and Clearcase).
 %package        ergonomics
 Summary:        NetBeans ergonomics suite
 Group:          Development/Languages
-Requires:       netbeans = %{version}
+Requires:       %{name} = %{version}
 BuildArch:      noarch
 AutoReqProv:    no
 
@@ -70,7 +71,7 @@ NetBeans ergonomics suite, adding lazy initialization for all other modules.
 %package        cnd
 Summary:        C/C++ development for NetBeans
 Group:          Development/Languages
-Requires:       netbeans = %{version}
+Requires:       %{name} = %{version}
 BuildArch:      noarch
 AutoReqProv:    no
 
@@ -80,7 +81,7 @@ C/C++ development environment for NetBeans.
 %package        java
 Summary:        Java development for NetBeans
 Group:          Development/Languages
-Requires:       netbeans = %{version}
+Requires:       %{name} = %{version}
 BuildArch:      noarch
 AutoReqProv:    no
 
@@ -90,7 +91,7 @@ Java development environment for NetBeans.
 %package        enterprise
 Summary:        Enterprise Java development for NetBeans
 Group:          Development/Languages
-Requires:       netbeans-java = %{version}
+Requires:       %{name}-java = %{version}
 BuildArch:      noarch
 AutoReqProv:    no
 
@@ -100,7 +101,7 @@ Enterprise Java development environment for NetBeans.
 %package        launchers
 Summary:        Path launchers for NetBeans
 Group:          Development/Languages
-Requires:       netbeans = %{version}
+Requires:       %{name} = %{version}
 BuildArch:      noarch
 
 %description    launchers
@@ -111,6 +112,7 @@ in path but not to conflict with existing jpackage-based packages.
 %setup -q -n %{name}
 bash %{SOURCE91}
 bash %{SOURCE92}
+bash %{SOURCE93}
 cp -f %{SOURCE11} ide.branding/release/netbeans.png
 cp -f %{SOURCE12} ide.branding/release/netbeans.icns
 cp -f %{SOURCE13} ide.branding/core.startup/src/org/netbeans/core/startup/frame_nb.gif
@@ -126,7 +128,7 @@ ant -Dpermit.jdk8.builds=true -Dbinaries.cache="$(pwd)/binaries-cache" -silent b
 popd
 
 %install
-bash %{SOURCE93}
+bash %{SOURCE99}
 # install config:
 cp -f %{SOURCE3} nbbuild/netbeans/etc/
 # we are building release build,
