@@ -20,7 +20,7 @@
 %define __jar_repack %{nil}
 
 Name:           netbeans-beta
-Version:        20150723
+Version:        20150804
 Release:        0
 URL:            http://www.netbeans.org/
 Summary:        Integrated development environment
@@ -47,6 +47,7 @@ Source15:       nb40_48.gif
 Source91:       drop-unsupported-modules.sh
 Source92:       drop-javadocs.sh
 Source93:       tuxjdk-change-default-font-size.sh
+Source94:       drop-jre-splash.sh
 Source99:       post-build-cleanup.sh
 Source100:      netbeans-rpmlintrc
 
@@ -110,24 +111,44 @@ in path but not to conflict with existing jpackage-based packages.
 
 %prep
 %setup -q -n %{name}
+## dropping everything javafx related,
+## openjdk does not have the support for javafx
+## and we are not interested in maintaining it anyway:
 bash %{SOURCE91}
+## we do not need javadocs now,
+## and because of javafx modules drop some of them
+## are not even buildable:
 bash %{SOURCE92}
+## tuxjdk solves the 'pt' inconsistency of openjdk,
+## so we want default size of 9 instead of 13:
 bash %{SOURCE93}
+## using good old NetBeans 4.1 icons:
 cp -f %{SOURCE11} ide.branding/release/netbeans.png
 cp -f %{SOURCE12} ide.branding/release/netbeans.icns
 cp -f %{SOURCE13} ide.branding/core.startup/src/org/netbeans/core/startup/frame_nb.gif
 cp -f %{SOURCE14} ide.branding/core.startup/src/org/netbeans/core/startup/frame32_nb.gif
 cp -f %{SOURCE15} ide.branding/core.startup/src/org/netbeans/core/startup/frame48_nb.gif
+## unpacking binary build dependencies:
 pushd nbbuild
 tar -xJf %{SOURCE1}
 popd
 
 %build
 pushd nbbuild
+export ANT_OPTS='-Xmx2G'
 ant -Dpermit.jdk8.builds=true -Dbinaries.cache="$(pwd)/binaries-cache" -silent build-nozip
 popd
 
 %install
+## awt splash screen has an issue with xinerama:
+## https://bugs.openjdk.java.net/browse/JDK-6481523
+## but NetBeans splash screen works very well,
+## so we will sed out the '-splash:smthng' argument
+## from netbeans startup scripts:
+bash %{SOURCE94}
+## remove all the windows and mac libraries and scripts,
+## hidden files and everything that we do not want to distribute
+## after the build:
 bash %{SOURCE99}
 # install config:
 cp -f %{SOURCE3} nbbuild/netbeans/etc/
@@ -197,5 +218,18 @@ install -Dm 755 %{SOURCE2} %{buildroot}/usr/local/bin/netbeans
 /usr/local/bin/*
 
 %changelog
+* Mon Aug  4 2015 baiduzhyi.devel@gmail.com
+- Updating to 2015-08-04.
+- Removing usage of awt splash screen.
+* Sat Aug  1 2015 baiduzhyi.devel@gmail.com
+- Updating to 2015-07-31.
+* Mon Jul 27 2015 baiduzhyi.devel@gmail.com
+- Updating to 2015-07-25.
+* Sat Jul 25 2015 baiduzhyi.devel@gmail.com
+- Updating to 2015-07-24.
+* Thu Jul 23 2015 baiduzhyi.devel@gmail.com
+- Updating to 2015-07-23.
+- Added default font size changer.
+- Increasing the memory for ant because of compilation OutOfMemoryError.
 * Tue Jul 21 2015 baiduzhyi.devel@gmail.com
 - Initial package for netbeans-beta.
