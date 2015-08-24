@@ -20,7 +20,7 @@
 %define __jar_repack %{nil}
 
 Name:           netbeans-beta
-Version:        20150804
+Version:        20150820
 Release:        0
 URL:            http://www.netbeans.org/
 Summary:        Integrated development environment
@@ -218,7 +218,17 @@ install -Dm 755 %{SOURCE2} %{buildroot}/usr/local/bin/netbeans
 /usr/local/bin/*
 
 %changelog
-* Mon Aug  4 2015 baiduzhyi.devel@gmail.com
+* Mon Aug 24 2015 baiduzhyi.devel@gmail.com
+- Updating to 2015-08-24.
+* Thu Aug 20 2015 baiduzhyi.devel@gmail.com
+- Updating to 2015-08-20.
+* Wed Aug 19 2015 baiduzhyi.devel@gmail.com
+- Updating to 2015-08-19.
+* Mon Aug 17 2015 baiduzhyi.devel@gmail.com
+- Updating to 2015-08-17.
+* Mon Aug 10 2015 baiduzhyi.devel@gmail.com
+- Updating to 2015-08-10.
+* Tue Aug  4 2015 baiduzhyi.devel@gmail.com
 - Updating to 2015-08-04.
 - Removing usage of awt splash screen.
 * Sat Aug  1 2015 baiduzhyi.devel@gmail.com

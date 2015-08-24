@@ -14,8 +14,8 @@
 
 %global vendor  tuxjdk
 
-%global hgtag   jdk8u51-b16
-%global update  51
+%global hgtag   jdk8u60-b27
+%global update  60
 %global minor   03
 
 # openjdk build system is different,
@@ -131,6 +131,9 @@ cp default_swing.properties %{buildroot}/opt/%{vendor}/%{name}/jre/lib/swing.pro
 /usr/local/bin/*
 
 %changelog
+* Fri Aug 21 2015 baiduzhyi.devel@gmail.com
+- Refreshing for 8u60.
+- Dropping giflib5 and gcc5 patches.
 * Wed Jul 15 2015 baiduzhyi.devel@gmail.com
 - Refreshing for 8u51.
 * Tue Jul 14 2015 - baiduzhyi.devel@gmail.com

@@ -2,7 +2,7 @@
 Type=Application
 Exec=/opt/tuxjdk/netbeans-beta/bin/netbeans %F
 Name=NetBeans Beta
-GenericName=NetBeans Beta
+GenericName=The best IDE for C/C++, Java and Java-Enterprise development
 Icon=/opt/tuxjdk/netbeans-beta/nb/netbeans.png
 Terminal=false
 Categories=Development;IDE;
