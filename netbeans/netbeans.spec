@@ -21,8 +21,8 @@
 # we are bundling some pre-built binaries, should not fail on them:
 %global _binaries_in_noarch_packages_terminate_build 0
 
-Name:           netbeans-beta
-Version:        20160422
+Name:           netbeans
+Version:        8.1.0.21
 Release:        0
 URL:            http://www.netbeans.org/
 Summary:        Integrated development environment

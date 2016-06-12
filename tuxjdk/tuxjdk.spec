@@ -14,8 +14,8 @@
 
 %global vendor  tuxjdk
 
-%global hgtag   jdk8u60-b27
-%global update  60
+%global hgtag   jdk8u92-b14
+%global update  92
 %global minor   03
 
 # openjdk build system is different,
@@ -57,12 +57,17 @@ BuildRequires:  libXinerama-devel
 BuildRequires:  libXt-devel
 BuildRequires:  libXtst-devel
 BuildRequires:  java-devel
+BuildRequires:  ca-certificates
+%if 0%{?is_opensuse}
+BuildRequires:  ca-certificates-mozilla
+BuildRequires:  ca-certificates-cacert
+%endif
 BuildRequires:  quilt
 BuildRequires:  fdupes
-Source0:        %{name}-%{version}.tar.xz
-Source1:        %{hgtag}.tar.xz
-Source2:        launcher.sh
-Source13:       %{name}-rpmlintrc
+Source0:        https://github.com/tuxjdk/tuxjdk/archive/%{version}.tar.gz
+Source1:        https://github.com/tuxjdk/jdk8u/archive/%{hgtag}.tar.gz
+Source2:        https://raw.githubusercontent.com/tuxjdk/tuxjdk/master/launcher.sh
+Source13:       https://raw.githubusercontent.com/tuxjdk/tuxjdk/master/%{name}-rpmlintrc
 
 %description
 Enhanced Open Java Development Kit for developers on Linux. Contains series of
@@ -80,8 +85,9 @@ Launch scripts for TuxJdk, located under /usr/local/bin, to be the first
 in path but not to conflict with existing jpackage-based packages.
 
 %prep
-%setup -q
+%setup -q -n %{name}-%{version}
 %setup -q -T -D -a 1
+mv jdk8u-%{hgtag} %{hgtag}
 ( cd %{hgtag}/jdk/src/share/native/sun/awt && rm -rf giflib )
 ( cd %{hgtag}/jdk/src/share/native/java/util/zip && rm -rf zlib-1.2.8 )
 ( cd %{hgtag} && bash ../applyTuxjdk.sh )
@@ -118,6 +124,15 @@ install -Dm 755 %{SOURCE2} %{buildroot}/usr/local/bin/javah
 # default font size and antialiasing mode:
 # TODO maybe find a better way to do that?
 cp default_swing.properties %{buildroot}/opt/%{vendor}/%{name}/jre/lib/swing.properties
+# copy the certificates:
+if [ -f '/var/lib/ca-certificates/java-cacerts' ] ; then
+  cp -f '/var/lib/ca-certificates/java-cacerts' %{buildroot}/opt/%{vendor}/%{name}/jre/lib/security/cacerts
+elif readlink -e '/etc/pki/java/cacerts' ; then
+  cp -f "$( readlink -e '/etc/pki/java/cacerts' )" %{buildroot}/opt/%{vendor}/%{name}/jre/lib/security/cacerts
+else
+  echo 'No cacerts found!' >&2
+  exit 1
+fi
 
 %files
 %defattr(644,root,root,755)
@@ -131,6 +146,12 @@ cp default_swing.properties %{buildroot}/opt/%{vendor}/%{name}/jre/lib/swing.pro
 /usr/local/bin/*
 
 %changelog
+* Sun May  8 2016 baiduzhyi.devel@gmail.com
+- Refreshing for 8u92.
+* Sun Nov 15 2015 baiduzhyi.devel@gmail.com
+- Adding cacert from the distribution.
+* Thu Nov 12 2015 baiduzhyi.devel@gmail.com
+- Refreshing for 8u66.
 * Fri Aug 21 2015 baiduzhyi.devel@gmail.com
 - Refreshing for 8u60.
 - Dropping giflib5 and gcc5 patches.

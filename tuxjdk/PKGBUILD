@@ -1,0 +1,6 @@
+pkgname=(tuxjdk)
+pkgver=8.92.04
+pkgrel=1
+arch=('x86_64')
+url='https://github.com/tuxjdk/tuxjdk'
+license=('custom')

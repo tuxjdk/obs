@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Exec=/opt/tuxjdk/netbeans/bin/netbeans %F
+Name=NetBeans
+GenericName=The best IDE for C/C++, Java and Java-Enterprise development
+Icon=/opt/tuxjdk/netbeans/nb/netbeans.png
+Terminal=false
+Categories=Development;IDE;
+MimeType=text/x-java;text/plain;application/xml;application/xsd;application/xml-dtd;text/x-c++src;text/x-c++hdr;text/x-csrc;text/x-chdr;application/json;
